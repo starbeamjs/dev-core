@@ -1,5 +1,12 @@
-export { EXTERNAL, INLINE } from "#/constants.js";
-export { Package, rootAt } from "#/package.js";
+export { EXTERNAL, INLINE } from "./constants.js";
+export type {
+  PackageJSON,
+  StarbeamJSON,
+  StarbeamKey,
+  StarbeamValue,
+  StrictSettings,
+} from "./manifest.js";
+export { Package, rootAt } from "./package.js";
 export type {
   ExternalConfig,
   InlineRule,
@@ -11,4 +18,4 @@ export type {
   PackageInfo,
   RollupExternal,
   SimpleExternal,
-} from "#/types";
+} from "./types";

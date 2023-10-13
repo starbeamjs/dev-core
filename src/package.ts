@@ -1,9 +1,8 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
-import type { PackageJSON, StarbeamValue } from "#/manifest";
-
 import { normalizeRules } from "./externals.js";
+import type { PackageJSON, StarbeamValue } from "./manifest.js";
 import { getPackageMeta } from "./package-meta.js";
 import type {
   PackageInfo,
@@ -135,14 +134,6 @@ function buildPackage(meta: ImportMeta | string): Package | undefined {
 
 type StrictSettingsJson = StarbeamValue<"strict">;
 
-/**
- * @typedef {import("#/types").StrictSettings} StrictSettingsInterface
- * @typedef {import("#/manifest").StarbeamValue<"strict">} StrictSettingsJson
- */
-
-/**
- * @implements {StrictSettingsInterface}
- */
 class StrictSettings implements StrictSettingsInterface {
   #expanded: StrictSettingsInterface;
 

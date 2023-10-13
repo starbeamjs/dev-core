@@ -1,5 +1,4 @@
-import type { PackageJSON, StarbeamKey, StarbeamValue } from "#/manifest";
-
+import type { PackageJSON, StarbeamKey, StarbeamValue } from "./manifest.js";
 import type { JsonValue } from "./types";
 
 export function getPackageMeta<P extends StarbeamKey, T>(
@@ -39,11 +38,7 @@ export function getPackageMeta(
   invalidKey(root, starbeam);
 }
 
-/**
- * @param {string} root
- * @param {import("#/json").JsonValue} value
- */
-function invalidKey(root: string, value: JsonValue) {
+function invalidKey(root: string, value: JsonValue): void {
   const message = [`Invalid value for the starbeam key (expected an object`];
 
   if (Array.isArray(value)) {

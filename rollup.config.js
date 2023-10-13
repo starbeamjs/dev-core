@@ -26,6 +26,7 @@ export default defineConfig({
         if (id.startsWith("node:")) return { id, external: true };
       },
     },
+
     ts({
       transpiler: "swc",
       transpileOnly: true,

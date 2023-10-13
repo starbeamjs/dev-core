@@ -1,10 +1,8 @@
-import type { InlineRules, JsonObject, Strictness } from "#/types";
+import type { InlineRules, JsonObject, Strictness } from "./types";
 
 export type StarbeamKey = keyof NonNullable<StarbeamJSON["starbeam"]>;
 export type StarbeamValue<K extends StarbeamKey> =
   StarbeamJSON[`starbeam:${K}`];
-
-export type ReportItem = "externals:fallback";
 
 export interface StrictSettings {
   readonly externals: "explicit";

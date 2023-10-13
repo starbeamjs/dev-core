@@ -12,9 +12,7 @@
     "noImplicitAny": true,
     "noPropertyAccessFromIndexSignature": true,
     "noUncheckedIndexedAccess": true,
-    "paths": {
-      "#/*": ["./src/*"]
-    },
+
     "skipDefaultLibCheck": true,
     "strict": true,
     "target": "ESNext",

@@ -2,20 +2,15 @@ import type {
   ExternalConfig,
   InlineRules,
   NormalizedExternalOption,
-} from "#/types";
+} from "./types";
 
 const HELPERS = ["@babel/runtime/*", "tslib", "@swc/core"];
 
-/**
- * @param {import("#/types").InlineRules | undefined} rules
- * @param {{package: string}} options
- */
 export function normalizeRules(
   rules: InlineRules | undefined,
   { package: packageName }: { package: string },
 ): NormalizedExternalOption[] {
-  /** @type {import("#/types").NormalizedExternalOption[]} */
-  const normalized: import("#/types").NormalizedExternalOption[] = [];
+  const normalized: NormalizedExternalOption[] = [];
 
   if (rules !== undefined) {
     if (Array.isArray(rules)) {
@@ -42,23 +37,16 @@ export function normalizeRules(
   return normalized;
 }
 
-/**
- * @param {import("#/types").InlineRule} rule
- * @param {object} options
- * @param {import("#/types").ExternalConfig | undefined} [options.defaultConfig]
- * @param {string} options.packageName
- * @returns {import("#/types").NormalizedExternalOption[]}
- */
 function normalizeRule(
-  rule: import("#/types").InlineRule,
+  rule: import("./types").InlineRule,
   {
     defaultConfig = "inline",
     packageName,
   }: {
-    defaultConfig?: import("#/types").ExternalConfig | undefined;
+    defaultConfig?: ExternalConfig | undefined;
     packageName: string;
   },
-): import("#/types").NormalizedExternalOption[] {
+): NormalizedExternalOption[] {
   if (typeof rule === "string") {
     return normalizeLeaf(rule, defaultConfig, packageName);
   } else {
