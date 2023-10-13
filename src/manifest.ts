@@ -1,4 +1,4 @@
-import type { InlineRules, JsonObject, Strictness } from "./types";
+import type { InlineRules, JsonObject, Strictness } from "./types.js";
 
 export type StarbeamKey = keyof NonNullable<StarbeamJSON["starbeam"]>;
 export type StarbeamValue<K extends StarbeamKey> =
@@ -26,6 +26,7 @@ export interface PackageJSON extends StarbeamJSON {
   readonly main: string;
   readonly private: boolean;
   readonly name: string;
+  readonly dependencies?: Record<string, string>;
 }
 
 type StarbeamRecord<T extends JsonObject> = {

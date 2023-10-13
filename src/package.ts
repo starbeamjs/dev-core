@@ -23,6 +23,25 @@ export class Package implements PackageInfo {
     this.#package = pkg;
   }
 
+  [Symbol.for("nodejs.util.inspect.custom")](): object {
+    const pkg = new (class Package {})();
+    Object.defineProperties(
+      pkg,
+      Object.fromEntries(
+        Object.entries(this.#package).map(([k, v]) => [
+          k,
+          { value: v as PackageInfo[keyof PackageInfo], enumerable: true },
+        ]),
+      ),
+    );
+
+    return pkg;
+  }
+
+  get dependencies(): Record<string, string> {
+    return this.#package.dependencies;
+  }
+
   get name(): string {
     return this.#package.name;
   }
@@ -65,10 +84,14 @@ function buildPackage(meta: ImportMeta | string): Package | undefined {
   );
 
   const type = getPackageMeta(root, json, "type", (value) => {
-    if (typeof value !== "string") {
-      throw new Error(`Invalid starbeam:type: ${JSON.stringify(value)}`);
+    if (value !== undefined) {
+      if (typeof value !== "string") {
+        throw new Error(`Invalid starbeam:type: ${JSON.stringify(value)}`);
+      }
+      return value;
     }
-    return value;
+
+    return json.private ? "library:private" : "library:public";
   });
 
   let jsx: string | undefined;
@@ -112,6 +135,7 @@ function buildPackage(meta: ImportMeta | string): Package | undefined {
       name: json.name,
       main: resolve(root, json.main),
       root,
+      dependencies: json.dependencies ?? {},
       starbeam: {
         inline,
         strict,

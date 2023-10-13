@@ -14,6 +14,7 @@ export interface PackageInfo {
   readonly root: string;
   readonly main: string;
   readonly starbeam: StarbeamInfo;
+  readonly dependencies: Record<string, string>;
 }
 
 export type Strictness = "error" | "warn" | "allow";

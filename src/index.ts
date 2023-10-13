@@ -18,4 +18,4 @@ export type {
   PackageInfo,
   RollupExternal,
   SimpleExternal,
-} from "./types";
+} from "./types.js";
