@@ -2,7 +2,7 @@ import type {
   ExternalConfig,
   InlineRules,
   NormalizedExternalOption,
-} from "./types";
+} from "./types.js";
 
 const HELPERS = ["@babel/runtime/*", "tslib", "@swc/core"];
 

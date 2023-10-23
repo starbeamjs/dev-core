@@ -1,4 +1,4 @@
-import type { RollupExternal } from "./types";
+import type { RollupExternal } from "./types.js";
 
 /**
  * The package should be inlined into the output. In this situation, the `external` function should
