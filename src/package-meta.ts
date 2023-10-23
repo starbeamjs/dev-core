@@ -1,5 +1,26 @@
 import type { PackageJSON, StarbeamKey, StarbeamValue } from "./manifest.js";
-import type { JsonValue } from "./types";
+import type { JsonValue } from "./types.js";
+
+export class GetPackageMeta {
+  readonly #root: string;
+  readonly #json: PackageJSON;
+
+  constructor(root: string, json: PackageJSON) {
+    this.#root = root;
+    this.#json = json;
+  }
+
+  get<P extends StarbeamKey>(path: P): StarbeamValue<P> {
+    return getPackageMeta(this.#root, this.#json, path);
+  }
+
+  map<P extends StarbeamKey, T>(
+    path: P,
+    map: (value: StarbeamValue<P>) => T,
+  ): T {
+    return getPackageMeta(this.#root, this.#json, path, map);
+  }
+}
 
 export function getPackageMeta<P extends StarbeamKey, T>(
   root: string,

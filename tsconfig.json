@@ -10,7 +10,7 @@
     "noPropertyAccessFromIndexSignature": true,
     "noUncheckedIndexedAccess": true,
     "outDir": "dist",
-    "skipDefaultLibCheck": true,
+    "skipLibCheck": true,
     "strict": true,
     "target": "ESNext",
     "types": ["node"],

@@ -6,13 +6,20 @@ export interface StarbeamInfo {
   readonly source: string | undefined;
   readonly jsx: string | undefined;
   readonly type: string;
-  readonly entry: Record<string, string>;
+  readonly entry: Record<string, string> | undefined;
 }
 
 export interface PackageInfo {
   readonly name: string;
   readonly root: string;
+  /**
+   * The main *published* entry point for this package.
+   */
   readonly main: string;
+  /**
+   * The main *source* entry point for this package.
+   */
+  readonly entry: string;
   readonly starbeam: StarbeamInfo;
   readonly dependencies: Record<string, string>;
 }

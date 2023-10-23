@@ -1,9 +1,9 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 import { normalizeRules } from "./externals.js";
 import type { PackageJSON, StarbeamValue } from "./manifest.js";
-import { getPackageMeta } from "./package-meta.js";
+import { GetPackageMeta } from "./package-meta.js";
 import type {
   PackageInfo,
   StarbeamInfo,
@@ -38,6 +38,10 @@ export class Package implements PackageInfo {
     return pkg;
   }
 
+  get entry(): string {
+    return this.#package.entry;
+  }
+
   get dependencies(): Record<string, string> {
     return this.#package.dependencies;
   }
@@ -63,8 +67,8 @@ export function rootAt(meta: ImportMeta | string): string {
   return typeof meta === "string" ? meta : new URL(".", meta.url).pathname;
 }
 
-function buildPackage(meta: ImportMeta | string): Package | undefined {
-  const root = typeof meta === "string" ? meta : rootAt(meta);
+function buildPackage(importMeta: ImportMeta | string): Package | undefined {
+  const root = typeof importMeta === "string" ? importMeta : rootAt(importMeta);
 
   const json: PackageJSON = parseJSON(
     readFileSync(resolve(root, "package.json"), "utf8"),
@@ -72,18 +76,15 @@ function buildPackage(meta: ImportMeta | string): Package | undefined {
 
   const name = json.name;
 
-  const inline = getPackageMeta(root, json, "inline", (rules) =>
+  const meta = new GetPackageMeta(root, json);
+
+  const inline = meta.map("inline", (rules) =>
     normalizeRules(rules, { package: name }),
   );
 
-  const strict = getPackageMeta(
-    root,
-    json,
-    "strict",
-    (value) => new StrictSettings(root, value),
-  );
+  const strict = meta.map("strict", (value) => new StrictSettings(root, value));
 
-  const type = getPackageMeta(root, json, "type", (value) => {
+  const type = meta.map("type", (value) => {
     if (value !== undefined) {
       if (typeof value !== "string") {
         throw new Error(`Invalid starbeam:type: ${JSON.stringify(value)}`);
@@ -94,46 +95,34 @@ function buildPackage(meta: ImportMeta | string): Package | undefined {
     return json.private ? "library:private" : "library:public";
   });
 
-  let jsx: string | undefined;
+  const jsx = meta.get("jsx");
+  const source = meta.get("source");
 
-  if (json["starbeam:jsx"]) {
-    jsx = json["starbeam:jsx"];
-  } else if (json.starbeam?.jsx) {
-    jsx = json.starbeam.jsx;
-  }
+  const entry = meta.map("entry", (entry) => {
+    if (typeof entry === "string") {
+      return { index: entry };
+    } else if (typeof entry === "object") {
+      return entry;
+    } else {
+      const main = json.main;
 
-  let source: string | undefined;
+      if (main.endsWith(".ts")) {
+        return { index: main };
+      }
 
-  if (json["starbeam:source"]) {
-    source = json["starbeam:source"];
-  } else {
-    source = json.starbeam?.source;
-  }
+      if (existsSync(resolve(root, "src", "index.ts"))) {
+        return { index: "src/index.ts" };
+      }
+    }
+  });
 
-  let rawEntry: Record<string, string> | string | undefined;
+  const mainEntry = entry?.["index"];
 
-  if (json["starbeam:entry"]) {
-    rawEntry = json["starbeam:entry"];
-  } else if (json.starbeam?.entry) {
-    rawEntry = json.starbeam.entry;
-  } else {
-    rawEntry = undefined;
-  }
-
-  let entry: Record<string, string>;
-
-  if (typeof rawEntry === "string") {
-    entry = { index: rawEntry };
-  } else if (typeof rawEntry === "object") {
-    entry = rawEntry;
-  } else {
-    entry = { index: json.main };
-  }
-
-  if (json.main) {
+  if (mainEntry) {
     return new Package({
       name: json.name,
-      main: resolve(root, json.main),
+      main: json.main,
+      entry: mainEntry,
       root,
       dependencies: json.dependencies ?? {},
       starbeam: {
@@ -145,11 +134,6 @@ function buildPackage(meta: ImportMeta | string): Package | undefined {
         entry,
       },
     });
-  } else if (
-    json["starbeam:type"] === "draft" ||
-    json.starbeam?.type === "draft"
-  ) {
-    // do nothing
   } else {
     // eslint-disable-next-line no-console
     console.warn(`No main entry point found for ${json.name} (in ${root})`);

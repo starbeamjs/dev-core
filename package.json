@@ -15,7 +15,7 @@
     "test:types": "tsc -b"
   },
   "devDependencies": {
-    "@starbeam-dev/eslint-plugin": "^1.0.1",
+    "@starbeam-dev/eslint-plugin": "^1.0.3",
     "@swc/core": "^1.3.92",
     "@swc/helpers": "^0.5.3",
     "@types/node": "^20.8.5",
